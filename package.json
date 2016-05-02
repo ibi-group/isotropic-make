@@ -9,6 +9,7 @@
         ],
         "sourceMaps": "inline"
     },
+    "bugs": "https://github.com/ibi-group/isotropic-make/issues",
     "contributors": [
         "Duane Sibilly <duane.sibilly@ibigroup.com>"
     ],
@@ -47,9 +48,11 @@
         },
         "root": true
     },
+    "homepage": "https://github.com/ibi-group/isotropic-make",
     "license": "BSD-3-Clause",
     "main": "lib/make.js",
     "name": "isotropic-make",
+    "repository": "ibi-group/isotropic-make",
     "scripts": {
         "build": "babel js -d lib",
         "lint": "eslint js test",
