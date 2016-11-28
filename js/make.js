@@ -49,11 +49,13 @@ export default (superConstructorFunction, mixinConstructorFunctions, prototypeOb
     }
 
     /* eslint-disable no-use-before-define */
-    const constructorFunction = typeof initFunction === 'function' ? function (...args) {
-            return Reflect.apply(initFunction, _create(constructorFunction, inheritedPrototypeObject), args);
-        } : function () {
-            return _create(constructorFunction, inheritedPrototypeObject);
-        },
+    const constructorFunction = typeof initFunction === 'function' ?
+            function (...args) {
+                return Reflect.apply(initFunction, _create(constructorFunction, inheritedPrototypeObject), args);
+            } :
+            function () {
+                return _create(constructorFunction, inheritedPrototypeObject);
+            },
         superPrototypeObject = superConstructorFunction.prototype,
 
         inheritedPrototypeObject = _create(constructorFunction, superPrototypeObject);
@@ -92,7 +94,13 @@ export default (superConstructorFunction, mixinConstructorFunctions, prototypeOb
     }
 
     if (typeof staticInitFunction === 'function') {
-        return Reflect.apply(staticInitFunction, constructorFunction, Array.isArray(staticInitFunctionArgs) ? staticInitFunctionArgs : []);
+        return Reflect.apply(
+            staticInitFunction,
+            constructorFunction,
+            Array.isArray(staticInitFunctionArgs) ?
+                staticInitFunctionArgs :
+                []
+        );
     }
 
     return constructorFunction;
