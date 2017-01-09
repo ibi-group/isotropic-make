@@ -403,6 +403,39 @@ describe('make', () => {
         expect(ConstructorFunctionC).to.have.property('c', 'c');
     });
 
+    it('should call the inherited initialization method when it hasn\'t been overwritten', () => {
+        const ConstructorFunctionA = make({
+                _init () {
+                    this._a = 'a';
+                    return this;
+                }
+            }),
+            ConstructorFunctionB = make(ConstructorFunctionA, {
+                get a () {
+                    return this._a;
+                }
+            }),
+            instance = new ConstructorFunctionB();
+
+        expect(instance).to.have.property('a', 'a');
+    });
+
+    it('should call the inherited static initialization method when it hasn\'t been overwritten', () => {
+        const ConstructorFunctionA = make({}, {
+                _init () {
+                    this._a = 'a';
+                    return this;
+                }
+            }),
+            ConstructorFunctionB = make(ConstructorFunctionA, {}, {
+                get a () {
+                    return this._a;
+                }
+            });
+
+        expect(ConstructorFunctionB).to.have.property('a', 'a');
+    });
+
     it('should mix prototypes', () => {
         const ConstructorFunctionA = make({
                 a: 'a',
@@ -524,5 +557,42 @@ describe('make', () => {
         expect(ConstructorFunction).to.have.property('x', 'x');
         expect(ConstructorFunction).to.have.property('y', 'y');
         expect(ConstructorFunction).to.have.property('z', 'z');
+    });
+
+    it('should call the mixed initialization method when it hasn\'t been overwritten', () => {
+        const ConstructorFunctionA = make({
+                _init () {
+                    this._a = 'a';
+                    return this;
+                }
+            }),
+            ConstructorFunctionB = make([
+                ConstructorFunctionA
+            ], {
+                get a () {
+                    return this._a;
+                }
+            }),
+            instance = new ConstructorFunctionB();
+
+        expect(instance).to.have.property('a', 'a');
+    });
+
+    it('should call the mixed static initialization method when it hasn\'t been overwritten', () => {
+        const ConstructorFunctionA = make({}, {
+                _init () {
+                    this._a = 'a';
+                    return this;
+                }
+            }),
+            ConstructorFunctionB = make([
+                ConstructorFunctionA
+            ], {}, {
+                get a () {
+                    return this._a;
+                }
+            });
+
+        expect(ConstructorFunctionB).to.have.property('a', 'a');
     });
 });

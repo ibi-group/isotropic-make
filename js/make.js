@@ -44,22 +44,22 @@ export default (superConstructorFunction, mixinConstructorFunctions, prototypeOb
         }
     }
 
-    if (typeof initFunction === 'string') {
-        initFunction = prototypeObject[initFunction];
-    }
+    const superPrototypeObject = superConstructorFunction.prototype,
 
-    /* eslint-disable no-use-before-define */
-    const constructorFunction = typeof initFunction === 'function' ?
+        inheritedPrototypeObject = Object.create(superPrototypeObject),
+
+        constructorFunction = typeof initFunction === 'function' ?
             function (...args) {
                 return Reflect.apply(initFunction, _create(constructorFunction, inheritedPrototypeObject), args);
             } :
-            function () {
-                return _create(constructorFunction, inheritedPrototypeObject);
-            },
-        superPrototypeObject = superConstructorFunction.prototype,
+            function (...args) {
+                const instance = _create(constructorFunction, inheritedPrototypeObject),
+                    instanceInitFunction = instance[initFunction];
 
-        inheritedPrototypeObject = _create(constructorFunction, superPrototypeObject);
-    /* eslint-enable no-use-before-define */
+                return typeof instanceInitFunction === 'function' ?
+                    Reflect.apply(instanceInitFunction, instance, args) :
+                    instance;
+            };
 
     if (mixinConstructorFunctions) {
         const staticMixinObject = {};
@@ -77,6 +77,13 @@ export default (superConstructorFunction, mixinConstructorFunctions, prototypeOb
     }
 
     _mixin(prototypeObject, inheritedPrototypeObject);
+
+    Object.defineProperty(inheritedPrototypeObject, 'constructor', {
+        configurable: true,
+        enumerable: false,
+        value: constructorFunction,
+        writable: true
+    });
 
     if (staticObject) {
         _mixin(staticObject, constructorFunction);
