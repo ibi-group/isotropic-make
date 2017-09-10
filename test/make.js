@@ -1,75 +1,68 @@
-import {
-    describe,
-    it
-} from 'mocha';
+import _chai from 'chai';
+import _make from '../js/make.js';
+import _mocha from 'mocha';
 
-import {
-    expect
-} from 'chai';
-
-import make from '../js/make.js';
-
-describe('make', () => {
-    it('should make a simple constructor function', () => {
+_mocha.describe('make', () => {
+    _mocha.it('should make a simple constructor function', () => {
         const prototypeObject = {
                 a: 'a',
                 b: 'b',
                 c: 'c'
             },
 
-            ConstructorFunction = make(prototypeObject);
+            ConstructorFunction = _make(prototypeObject);
 
-        expect(ConstructorFunction).to.be.a('function');
-        expect(ConstructorFunction).to.have.property('prototype').that.deep.equals(prototypeObject);
-        expect(ConstructorFunction).to.have.deep.property('prototype.constructor', ConstructorFunction);
+        _chai.expect(ConstructorFunction).to.be.a('function');
+        _chai.expect(ConstructorFunction).to.have.property('prototype').that.deep.equals(prototypeObject);
+        _chai.expect(ConstructorFunction.prototype).to.have.property('constructor', ConstructorFunction);
 
         {
             const instance = new ConstructorFunction();
 
-            expect(instance).to.be.an('object');
-            expect(instance).to.be.an.instanceOf(ConstructorFunction);
-            expect(instance).to.have.property('constructor', ConstructorFunction);
-            expect(instance).to.have.property('a', 'a');
-            expect(instance).to.have.property('b', 'b');
-            expect(instance).to.have.property('c', 'c');
+            _chai.expect(instance).to.be.an('object');
+            _chai.expect(instance).to.be.an.instanceOf(ConstructorFunction);
+            _chai.expect(instance).to.have.property('constructor', ConstructorFunction);
+            _chai.expect(instance).to.have.property('a', 'a');
+            _chai.expect(instance).to.have.property('b', 'b');
+            _chai.expect(instance).to.have.property('c', 'c');
         }
     });
 
-    it('should make a simple factory function', () => {
+    _mocha.it('should make a simple factory function', () => {
         const prototypeObject = {
                 a: 'a',
                 b: 'b',
                 c: 'c'
             },
 
-            factoryFunction = make(prototypeObject);
+            factoryFunction = _make(prototypeObject);
 
-        expect(factoryFunction).to.be.a('function');
-        expect(factoryFunction).to.have.property('prototype').that.deep.equals(prototypeObject);
-        expect(factoryFunction).to.have.deep.property('prototype.constructor', factoryFunction);
+        _chai.expect(factoryFunction).to.be.a('function');
+        _chai.expect(factoryFunction).to.have.property('prototype').that.deep.equals(prototypeObject);
+        _chai.expect(factoryFunction.prototype).to.have.property('constructor', factoryFunction);
 
         {
             const instance = factoryFunction();
 
-            expect(instance).to.be.an('object');
-            expect(instance).to.be.an.instanceOf(factoryFunction);
-            expect(instance).to.have.property('constructor', factoryFunction);
-            expect(instance).to.have.property('a', 'a');
-            expect(instance).to.have.property('b', 'b');
-            expect(instance).to.have.property('c', 'c');
+            _chai.expect(instance).to.be.an('object');
+            _chai.expect(instance).to.be.an.instanceOf(factoryFunction);
+            _chai.expect(instance).to.have.property('constructor', factoryFunction);
+            _chai.expect(instance).to.have.property('a', 'a');
+            _chai.expect(instance).to.have.property('b', 'b');
+            _chai.expect(instance).to.have.property('c', 'c');
         }
     });
 
-    it('should call the initialization method', () => {
+    _mocha.it('should call the initialization method', () => {
         let initThis,
             initWasCalled = false;
 
-        const ConstructorFunction = make({
+        const ConstructorFunction = _make({
                 _init (...args) {
                     initThis = this;
                     initWasCalled = true;
 
-                    expect(args).to.deep.equal([
+                    _chai.expect(args).to.deep.equal([
                         'a',
                         'b',
                         'c'
@@ -86,23 +79,23 @@ describe('make', () => {
             }),
             instance = new ConstructorFunction('a', 'b', 'c');
 
-        expect(initWasCalled).to.be.true;
-        expect(initThis).to.equal(instance);
-        expect(instance).to.have.property('a', 'a');
-        expect(instance).to.have.property('b', 'b');
-        expect(instance).to.have.property('c', 'c');
+        _chai.expect(initWasCalled).to.be.true;
+        _chai.expect(initThis).to.equal(instance);
+        _chai.expect(instance).to.have.property('a', 'a');
+        _chai.expect(instance).to.have.property('b', 'b');
+        _chai.expect(instance).to.have.property('c', 'c');
     });
 
-    it('should call the initialization method with a custom name', () => {
+    _mocha.it('should call the initialization method with a custom name', () => {
         let initThis,
             initWasCalled = false;
 
-        const ConstructorFunction = make({
+        const ConstructorFunction = _make({
                 initializer (...args) {
                     initThis = this;
                     initWasCalled = true;
 
-                    expect(args).to.deep.equal([
+                    _chai.expect(args).to.deep.equal([
                         'a',
                         'b',
                         'c'
@@ -119,23 +112,22 @@ describe('make', () => {
             }, 'initializer'),
             instance = new ConstructorFunction('a', 'b', 'c');
 
-        expect(initWasCalled).to.be.true;
-        expect(initThis).to.equal(instance);
-        expect(instance).to.have.property('a', 'a');
-        expect(instance).to.have.property('b', 'b');
-        expect(instance).to.have.property('c', 'c');
+        _chai.expect(initWasCalled).to.be.true;
+        _chai.expect(initThis).to.equal(instance);
+        _chai.expect(instance).to.have.property('a', 'a');
+        _chai.expect(instance).to.have.property('b', 'b');
+        _chai.expect(instance).to.have.property('c', 'c');
     });
 
-    it('should call the custom initialization method', () => {
+    _mocha.it('should call the custom initialization method', () => {
         let initThis,
             initWasCalled = false;
 
         const initFunction = function (...args) {
-                /* eslint-disable no-invalid-this */
                 initThis = this;
                 initWasCalled = true;
 
-                expect(args).to.deep.equal([
+                _chai.expect(args).to.deep.equal([
                     'a',
                     'b',
                     'c'
@@ -148,60 +140,59 @@ describe('make', () => {
                 ] = args;
 
                 return this;
-                /* eslint-enable no-invalid-this */
             },
 
-            ConstructorFunction = make({}, initFunction),
+            ConstructorFunction = _make({}, initFunction),
             instance = new ConstructorFunction('a', 'b', 'c');
 
-        expect(initWasCalled).to.be.true;
-        expect(initThis).to.equal(instance);
-        expect(instance).to.have.property('a', 'a');
-        expect(instance).to.have.property('b', 'b');
-        expect(instance).to.have.property('c', 'c');
+        _chai.expect(initWasCalled).to.be.true;
+        _chai.expect(initThis).to.equal(instance);
+        _chai.expect(instance).to.have.property('a', 'a');
+        _chai.expect(instance).to.have.property('b', 'b');
+        _chai.expect(instance).to.have.property('c', 'c');
     });
 
-    it('should mix static properties', () => {
-        const ConstructorFunction = make({}, {
+    _mocha.it('should mix static properties', () => {
+        const ConstructorFunction = _make({}, {
             a: 'a',
             b: 'b',
             c: 'c'
         });
 
-        expect(ConstructorFunction).to.have.property('a', 'a');
-        expect(ConstructorFunction).to.have.property('b', 'b');
-        expect(ConstructorFunction).to.have.property('c', 'c');
+        _chai.expect(ConstructorFunction).to.have.property('a', 'a');
+        _chai.expect(ConstructorFunction).to.have.property('b', 'b');
+        _chai.expect(ConstructorFunction).to.have.property('c', 'c');
     });
 
-    it('should call the static initialization method', () => {
+    _mocha.it('should call the static initialization method', () => {
         let staticInitWasCalled,
             staticThis;
 
-        const ConstructorFunction = make({}, {
+        const ConstructorFunction = _make({}, {
             _init (...args) {
                 staticThis = this;
                 staticInitWasCalled = true;
 
-                expect(args).to.deep.equal([]);
+                _chai.expect(args).to.deep.equal([]);
 
                 return this;
             }
         });
 
-        expect(staticInitWasCalled).to.be.true;
-        expect(staticThis).to.equal(ConstructorFunction);
+        _chai.expect(staticInitWasCalled).to.be.true;
+        _chai.expect(staticThis).to.equal(ConstructorFunction);
     });
 
-    it('should call the static initialization method with arguments', () => {
+    _mocha.it('should call the static initialization method with arguments', () => {
         let staticInitWasCalled,
             staticThis;
 
-        const ConstructorFunction = make({}, {
+        const ConstructorFunction = _make({}, {
             _init (...args) {
                 staticThis = this;
                 staticInitWasCalled = true;
 
-                expect(args).to.deep.equal([
+                _chai.expect(args).to.deep.equal([
                     'x',
                     'y',
                     'z'
@@ -221,23 +212,23 @@ describe('make', () => {
             'z'
         ]);
 
-        expect(staticInitWasCalled).to.be.true;
-        expect(staticThis).to.equal(ConstructorFunction);
-        expect(ConstructorFunction).to.have.property('x', 'x');
-        expect(ConstructorFunction).to.have.property('y', 'y');
-        expect(ConstructorFunction).to.have.property('z', 'z');
+        _chai.expect(staticInitWasCalled).to.be.true;
+        _chai.expect(staticThis).to.equal(ConstructorFunction);
+        _chai.expect(ConstructorFunction).to.have.property('x', 'x');
+        _chai.expect(ConstructorFunction).to.have.property('y', 'y');
+        _chai.expect(ConstructorFunction).to.have.property('z', 'z');
     });
 
-    it('should call the static initialization method with arguments when initialization method has a custom name', () => {
+    _mocha.it('should call the static initialization method with arguments when initialization method has a custom name', () => {
         let staticInitWasCalled,
             staticThis;
 
-        const ConstructorFunction = make({}, {
+        const ConstructorFunction = _make({}, {
             _init (...args) {
                 staticThis = this;
                 staticInitWasCalled = true;
 
-                expect(args).to.deep.equal([
+                _chai.expect(args).to.deep.equal([
                     'x',
                     'y',
                     'z'
@@ -257,23 +248,23 @@ describe('make', () => {
             'z'
         ]);
 
-        expect(staticInitWasCalled).to.be.true;
-        expect(staticThis).to.equal(ConstructorFunction);
-        expect(ConstructorFunction).to.have.property('x', 'x');
-        expect(ConstructorFunction).to.have.property('y', 'y');
-        expect(ConstructorFunction).to.have.property('z', 'z');
+        _chai.expect(staticInitWasCalled).to.be.true;
+        _chai.expect(staticThis).to.equal(ConstructorFunction);
+        _chai.expect(ConstructorFunction).to.have.property('x', 'x');
+        _chai.expect(ConstructorFunction).to.have.property('y', 'y');
+        _chai.expect(ConstructorFunction).to.have.property('z', 'z');
     });
 
-    it('should call the static initialization method with a custom name', () => {
+    _mocha.it('should call the static initialization method with a custom name', () => {
         let staticInitWasCalled,
             staticThis;
 
-        const ConstructorFunction = make({}, {
+        const ConstructorFunction = _make({}, {
             staticInitializer (...args) {
                 staticThis = this;
                 staticInitWasCalled = true;
 
-                expect(args).to.deep.equal([
+                _chai.expect(args).to.deep.equal([
                     'x',
                     'y',
                     'z'
@@ -293,23 +284,22 @@ describe('make', () => {
             'z'
         ]);
 
-        expect(staticInitWasCalled).to.be.true;
-        expect(staticThis).to.equal(ConstructorFunction);
-        expect(ConstructorFunction).to.have.property('x', 'x');
-        expect(ConstructorFunction).to.have.property('y', 'y');
-        expect(ConstructorFunction).to.have.property('z', 'z');
+        _chai.expect(staticInitWasCalled).to.be.true;
+        _chai.expect(staticThis).to.equal(ConstructorFunction);
+        _chai.expect(ConstructorFunction).to.have.property('x', 'x');
+        _chai.expect(ConstructorFunction).to.have.property('y', 'y');
+        _chai.expect(ConstructorFunction).to.have.property('z', 'z');
     });
 
-    it('should call the custom static initialization method', () => {
+    _mocha.it('should call the custom static initialization method', () => {
         let staticInitWasCalled,
             staticThis;
 
         const staticInitFunction = function (...args) {
-                /* eslint-disable no-invalid-this */
                 staticThis = this;
                 staticInitWasCalled = true;
 
-                expect(args).to.deep.equal([
+                _chai.expect(args).to.deep.equal([
                     'x',
                     'y',
                     'z'
@@ -322,30 +312,29 @@ describe('make', () => {
                 ] = args;
 
                 return this;
-                /* eslint-enable no-invalid-this */
             },
 
-            ConstructorFunction = make({}, '_init', staticInitFunction, [
+            ConstructorFunction = _make({}, '_init', staticInitFunction, [
                 'x',
                 'y',
                 'z'
             ]);
 
-        expect(staticInitWasCalled).to.be.true;
-        expect(staticThis).to.equal(ConstructorFunction);
-        expect(ConstructorFunction).to.have.property('x', 'x');
-        expect(ConstructorFunction).to.have.property('y', 'y');
-        expect(ConstructorFunction).to.have.property('z', 'z');
+        _chai.expect(staticInitWasCalled).to.be.true;
+        _chai.expect(staticThis).to.equal(ConstructorFunction);
+        _chai.expect(ConstructorFunction).to.have.property('x', 'x');
+        _chai.expect(ConstructorFunction).to.have.property('y', 'y');
+        _chai.expect(ConstructorFunction).to.have.property('z', 'z');
     });
 
-    it('should extend a prototype chain', () => {
-        const ConstructorFunctionA = make({
+    _mocha.it('should extend a prototype chain', () => {
+        const ConstructorFunctionA = _make({
                 _init (config) {
                     this.a = config.a;
                     return this;
                 }
             }),
-            ConstructorFunctionB = make(ConstructorFunctionA, {
+            ConstructorFunctionB = _make(ConstructorFunctionA, {
                 _init (...args) {
                     const [
                         config
@@ -355,7 +344,7 @@ describe('make', () => {
                     return Reflect.apply(ConstructorFunctionB.superclass._init, this, args);
                 }
             }),
-            ConstructorFunctionC = make(ConstructorFunctionB, {
+            ConstructorFunctionC = _make(ConstructorFunctionB, {
                 _init (...args) {
                     const [
                         config
@@ -371,73 +360,73 @@ describe('make', () => {
                 c: 'c'
             });
 
-        expect(ConstructorFunctionC).to.have.property('super_', ConstructorFunctionB);
-        expect(ConstructorFunctionC).to.have.property('superclass', ConstructorFunctionB.prototype);
-        expect(ConstructorFunctionB).to.have.property('super_', ConstructorFunctionA);
-        expect(ConstructorFunctionB).to.have.property('superclass', ConstructorFunctionA.prototype);
-        expect(instance).to.be.instanceOf(ConstructorFunctionC);
-        expect(instance).to.be.instanceOf(ConstructorFunctionB);
-        expect(instance).to.be.instanceOf(ConstructorFunctionA);
-        expect(instance).to.have.property('constructor', ConstructorFunctionC);
-        expect(instance).to.have.property('a', 'a');
-        expect(instance).to.have.property('b', 'b');
-        expect(instance).to.have.property('c', 'c');
+        _chai.expect(ConstructorFunctionC).to.have.property('super_', ConstructorFunctionB);
+        _chai.expect(ConstructorFunctionC).to.have.property('superclass', ConstructorFunctionB.prototype);
+        _chai.expect(ConstructorFunctionB).to.have.property('super_', ConstructorFunctionA);
+        _chai.expect(ConstructorFunctionB).to.have.property('superclass', ConstructorFunctionA.prototype);
+        _chai.expect(instance).to.be.instanceOf(ConstructorFunctionC);
+        _chai.expect(instance).to.be.instanceOf(ConstructorFunctionB);
+        _chai.expect(instance).to.be.instanceOf(ConstructorFunctionA);
+        _chai.expect(instance).to.have.property('constructor', ConstructorFunctionC);
+        _chai.expect(instance).to.have.property('a', 'a');
+        _chai.expect(instance).to.have.property('b', 'b');
+        _chai.expect(instance).to.have.property('c', 'c');
     });
 
-    it('should extend static properties', () => {
-        const ConstructorFunctionA = make({}, {
+    _mocha.it('should extend static properties', () => {
+        const ConstructorFunctionA = _make({}, {
                 a: 'a',
                 b: 'a',
                 c: 'a'
             }),
-            ConstructorFunctionB = make(ConstructorFunctionA, {}, {
+            ConstructorFunctionB = _make(ConstructorFunctionA, {}, {
                 b: 'b',
                 c: 'b'
             }),
-            ConstructorFunctionC = make(ConstructorFunctionB, {}, {
+            ConstructorFunctionC = _make(ConstructorFunctionB, {}, {
                 c: 'c'
             });
 
-        expect(ConstructorFunctionC).to.have.property('a', 'a');
-        expect(ConstructorFunctionC).to.have.property('b', 'b');
-        expect(ConstructorFunctionC).to.have.property('c', 'c');
+        _chai.expect(ConstructorFunctionC).to.have.property('a', 'a');
+        _chai.expect(ConstructorFunctionC).to.have.property('b', 'b');
+        _chai.expect(ConstructorFunctionC).to.have.property('c', 'c');
     });
 
-    it('should call the inherited initialization method when it hasn\'t been overwritten', () => {
-        const ConstructorFunctionA = make({
+    _mocha.it('should call the inherited initialization method when it hasn\'t been overwritten', () => {
+        const ConstructorFunctionA = _make({
                 _init () {
                     this._a = 'a';
                     return this;
                 }
             }),
-            ConstructorFunctionB = make(ConstructorFunctionA, {
+            ConstructorFunctionB = _make(ConstructorFunctionA, {
                 get a () {
                     return this._a;
                 }
             }),
             instance = new ConstructorFunctionB();
 
-        expect(instance).to.have.property('a', 'a');
+        _chai.expect(instance).to.have.property('a', 'a');
     });
 
-    it('should call the inherited static initialization method when it hasn\'t been overwritten', () => {
-        const ConstructorFunctionA = make({}, {
+    _mocha.it('should call the inherited static initialization method when it hasn\'t been overwritten', () => {
+        const ConstructorFunctionA = _make({}, {
                 _init () {
                     this._a = 'a';
                     return this;
                 }
             }),
-            ConstructorFunctionB = make(ConstructorFunctionA, {}, {
+            ConstructorFunctionB = _make(ConstructorFunctionA, {}, {
                 get a () {
                     return this._a;
                 }
             });
 
-        expect(ConstructorFunctionB).to.have.property('a', 'a');
+        _chai.expect(ConstructorFunctionB).to.have.property('a', 'a');
     });
 
-    it('should mix prototypes', () => {
-        const ConstructorFunctionA = make({
+    _mocha.it('should mix prototypes', () => {
+        const ConstructorFunctionA = _make({
                 a: 'a',
                 b: 'a',
                 c: 'a',
@@ -449,7 +438,7 @@ describe('make', () => {
                     return this;
                 }
             }),
-            ConstructorFunctionB = make({
+            ConstructorFunctionB = _make({
                 b: 'b',
                 c: 'b',
                 x: 'b',
@@ -460,7 +449,7 @@ describe('make', () => {
                     return this;
                 }
             }),
-            ConstructorFunctionC = make({
+            ConstructorFunctionC = _make({
                 c: 'c',
                 x: 'c',
                 y: 'c',
@@ -471,7 +460,7 @@ describe('make', () => {
                 }
             }),
 
-            ConstructorFunction = make([
+            ConstructorFunction = _make([
                 ConstructorFunctionA,
                 ConstructorFunctionB,
                 ConstructorFunctionC
@@ -495,26 +484,26 @@ describe('make', () => {
                 c: 'c'
             });
 
-        expect(ConstructorFunction).to.have.property('mixins').that.deep.equals([
+        _chai.expect(ConstructorFunction).to.have.property('mixins').that.deep.equals([
             ConstructorFunctionA,
             ConstructorFunctionB,
             ConstructorFunctionC
         ]);
-        expect(instance).to.be.instanceOf(ConstructorFunction);
-        expect(instance).to.have.property('constructor', ConstructorFunction);
-        expect(instance).to.have.property('a', 'a');
-        expect(instance).to.have.property('b', 'b');
-        expect(instance).to.have.property('c', 'c');
-        expect(instance).to.have.property('x', 'x');
-        expect(instance).to.have.property('y', 'y');
-        expect(instance).to.have.property('z', 'z');
-        expect(instance).to.have.property('_a', 'a');
-        expect(instance).to.have.property('_b', 'b');
-        expect(instance).to.have.property('_c', 'c');
+        _chai.expect(instance).to.be.instanceOf(ConstructorFunction);
+        _chai.expect(instance).to.have.property('constructor', ConstructorFunction);
+        _chai.expect(instance).to.have.property('a', 'a');
+        _chai.expect(instance).to.have.property('b', 'b');
+        _chai.expect(instance).to.have.property('c', 'c');
+        _chai.expect(instance).to.have.property('x', 'x');
+        _chai.expect(instance).to.have.property('y', 'y');
+        _chai.expect(instance).to.have.property('z', 'z');
+        _chai.expect(instance).to.have.property('_a', 'a');
+        _chai.expect(instance).to.have.property('_b', 'b');
+        _chai.expect(instance).to.have.property('_c', 'c');
     });
 
-    it('should mix static properties from mixins', () => {
-        const ConstructorFunctionA = make({}, {
+    _mocha.it('should mix static properties from mixins', () => {
+        const ConstructorFunctionA = _make({}, {
                 a: 'a',
                 b: 'a',
                 c: 'a',
@@ -522,21 +511,21 @@ describe('make', () => {
                 y: 'a',
                 z: 'a'
             }),
-            ConstructorFunctionB = make({}, {
+            ConstructorFunctionB = _make({}, {
                 b: 'b',
                 c: 'b',
                 x: 'b',
                 y: 'b',
                 z: 'b'
             }),
-            ConstructorFunctionC = make({}, {
+            ConstructorFunctionC = _make({}, {
                 c: 'c',
                 x: 'c',
                 y: 'c',
                 z: 'c'
             }),
 
-            ConstructorFunction = make([
+            ConstructorFunction = _make([
                 ConstructorFunctionA,
                 ConstructorFunctionB,
                 ConstructorFunctionC
@@ -546,27 +535,27 @@ describe('make', () => {
                 z: 'z'
             });
 
-        expect(ConstructorFunction).to.have.property('mixins').that.deep.equals([
+        _chai.expect(ConstructorFunction).to.have.property('mixins').that.deep.equals([
             ConstructorFunctionA,
             ConstructorFunctionB,
             ConstructorFunctionC
         ]);
-        expect(ConstructorFunction).to.have.property('a', 'a');
-        expect(ConstructorFunction).to.have.property('b', 'b');
-        expect(ConstructorFunction).to.have.property('c', 'c');
-        expect(ConstructorFunction).to.have.property('x', 'x');
-        expect(ConstructorFunction).to.have.property('y', 'y');
-        expect(ConstructorFunction).to.have.property('z', 'z');
+        _chai.expect(ConstructorFunction).to.have.property('a', 'a');
+        _chai.expect(ConstructorFunction).to.have.property('b', 'b');
+        _chai.expect(ConstructorFunction).to.have.property('c', 'c');
+        _chai.expect(ConstructorFunction).to.have.property('x', 'x');
+        _chai.expect(ConstructorFunction).to.have.property('y', 'y');
+        _chai.expect(ConstructorFunction).to.have.property('z', 'z');
     });
 
-    it('should call the mixed initialization method when it hasn\'t been overwritten', () => {
-        const ConstructorFunctionA = make({
+    _mocha.it('should call the mixed initialization method when it hasn\'t been overwritten', () => {
+        const ConstructorFunctionA = _make({
                 _init () {
                     this._a = 'a';
                     return this;
                 }
             }),
-            ConstructorFunctionB = make([
+            ConstructorFunctionB = _make([
                 ConstructorFunctionA
             ], {
                 get a () {
@@ -575,17 +564,17 @@ describe('make', () => {
             }),
             instance = new ConstructorFunctionB();
 
-        expect(instance).to.have.property('a', 'a');
+        _chai.expect(instance).to.have.property('a', 'a');
     });
 
-    it('should call the mixed static initialization method when it hasn\'t been overwritten', () => {
-        const ConstructorFunctionA = make({}, {
+    _mocha.it('should call the mixed static initialization method when it hasn\'t been overwritten', () => {
+        const ConstructorFunctionA = _make({}, {
                 _init () {
                     this._a = 'a';
                     return this;
                 }
             }),
-            ConstructorFunctionB = make([
+            ConstructorFunctionB = _make([
                 ConstructorFunctionA
             ], {}, {
                 get a () {
@@ -593,6 +582,6 @@ describe('make', () => {
                 }
             });
 
-        expect(ConstructorFunctionB).to.have.property('a', 'a');
+        _chai.expect(ConstructorFunctionB).to.have.property('a', 'a');
     });
 });
