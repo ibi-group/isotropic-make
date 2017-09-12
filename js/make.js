@@ -1,5 +1,4 @@
 import _create from 'isotropic-create';
-
 import _mixin from 'isotropic-mixin';
 
 export default (superConstructorFunction, mixinConstructorFunctions, prototypeObject, staticObject, initFunction, staticInitFunction, staticInitFunctionArgs) => {
