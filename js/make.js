@@ -33,13 +33,13 @@ export default (superConstructorFunction, mixinConstructorFunctions, prototypeOb
         staticInitFunction = '_init';
         initFunction = '_init';
     } else {
-        initFunction = initFunction || '_init';
+        initFunction ||= '_init';
 
         if (Array.isArray(staticInitFunction)) {
             staticInitFunctionArgs = staticInitFunction;
             staticInitFunction = '_init';
         } else {
-            staticInitFunction = staticInitFunction || '_init';
+            staticInitFunction ||= '_init';
         }
     }
 
