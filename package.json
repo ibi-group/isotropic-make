@@ -2,13 +2,13 @@
     "author": "Steven Olmsted <steven.olmsted@ibigroup.com>",
     "bugs": "https://github.com/ibi-group/isotropic-make/issues",
     "dependencies": {
-        "isotropic-create": "~0.13.0",
-        "isotropic-mixin": "~0.13.0"
+        "isotropic-create": "~0.13.1",
+        "isotropic-mixin": "~0.13.1"
     },
     "description": "A factory function that makes factory functions",
     "devDependencies": {
         "eslint": "~9.8.0",
-        "isotropic-dev-dependencies": "~0.3.0"
+        "isotropic-dev-dependencies": "~0.3.1"
     },
     "engines": {
         "node": "^22.5.1",
@@ -36,5 +36,5 @@
         "test": "cross-env BABEL_ENV=test c8 -c ./node_modules/isotropic-dev-dependencies/config/c8.json mocha --import=isotropic-dev-dependencies/lib/register-babel-loader.js"
     },
     "type": "module",
-    "version": "0.13.0"
+    "version": "0.13.1"
 }
