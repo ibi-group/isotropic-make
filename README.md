@@ -27,11 +27,11 @@ npm install isotropic-make
 import _make from 'isotropic-make';
 
 // Create a simple constructor function
-const _Person = _make({
+const _Person = _make('Person', {
     greet () {
         return `Hello, my name is ${this.name}`;
     },
-    _init({
+    _init ({
         age,
         name
     }) {
@@ -120,19 +120,19 @@ Reflect.apply(this.constructor.superclass.method, this, args);
 
 ```javascript
 // Example showing why direct references are more reliable
-const _Animal = _make({
+const _Animal = _make('Animal', {
         makeSound () {
             console.log('Generic animal sound');
         }
     }),
-    _Dog = _make(_Animal, {
+    _Dog = _make('Dog', _Animal, {
         makeSound () {
             // Reliable: Directly references parent
             Reflect.apply(_Animal.prototype.makeSound, this, []);
             console.log('Woof!');
         }
     }),
-    _Terrier = _make(_Dog, {
+    _Terrier = _make('Terrier', _Dog, {
         makeSound () {
             // Less reliable: If someone extends Terrier,
             // this.constructor.superclass would point to Terrier, not Dog
@@ -142,10 +142,19 @@ const _Animal = _make({
     });
 ```
 
+### 7. Named Constructor Functions
+
+You can optionally provide a name as the first argument to `isotropic-make`. The name is assigned to the constructor function and improves the developer experience when debugging and introspecting instances:
+
+- **`constructorFunction.name`** returns the provided name instead of an empty string.
+- **`instance.constructor.name`** returns the provided name, which is helpful for diagnostics, logging, and serialization.
+- **`Object.prototype.toString.call(instance)`** returns `[object Name]` instead of `[object Object]`, because the name is also assigned to the prototype's `Symbol.toStringTag`.
+
 ## API Overview
 
 ```javascript
 _make(
+    name,                      // Optional: String name for the constructor function
     superConstructorFunction,  // Optional: Parent constructor function to inherit from
     mixinConstructorFunctions, // Optional: Array of mixins to incorporate
     prototypeObject,           // Object with prototype methods and properties
@@ -156,6 +165,8 @@ _make(
 );
 ```
 
+Every argument except `prototypeObject` is optional. Arguments are matched positionally by type, so omitted leading arguments are detected and skipped automatically: a leading string is the `name`, a function is the `superConstructorFunction`, an array is the `mixinConstructorFunctions`, and the first plain object is the `prototypeObject`. An empty mixins array is treated the same as no mixins.
+
 ## Examples
 
 ### Basic Constructor with Static Methods
@@ -164,7 +175,7 @@ _make(
 import _make from 'isotropic-make';
 
 // Create a Rectangle constructor with instance and static methods
-const _Rectangle = _make({
+const _Rectangle = _make('Rectangle', {
     // prototype methods and properties
     getArea () {
         return this.height * this.width;
@@ -172,7 +183,7 @@ const _Rectangle = _make({
     getPerimeter () {
         return 2 * (this.height + this.width);
     },
-    _init({
+    _init ({
         height,
         width
     }) {
@@ -189,10 +200,10 @@ const _Rectangle = _make({
     }) {
         const height = area / width;
 
-      return _Rectangle({
-          height,
-          width
-      });
+        return _Rectangle({
+            height,
+            width
+        });
     },
     fromSquare ({
         size
@@ -207,13 +218,75 @@ const _Rectangle = _make({
 {
     // Create instances
     const rect1 = _Rectangle({
-          height: 5,
-          width: 10
-      }),
-      square = Rectangle.fromSquare(6);
+            height: 5,
+            width: 10
+        }),
+        square = _Rectangle.fromSquare({
+            size: 6
+        });
 
     console.log(rect1.getArea()); // 50
     console.log(square.getPerimeter()); // 24
+}
+```
+
+### Named Constructor Functions
+
+```javascript
+import _make from 'isotropic-make';
+
+// Provide a name as the optional leading argument
+const _Point = _make('Point', {
+    _init ({
+        x,
+        y
+    }) {
+        this.x = x;
+        this.y = y;
+
+        return this;
+    }
+});
+
+{
+    const point = _Point({
+        x: 3,
+        y: 4
+    });
+
+    console.log(_Point.name); // "Point"
+    console.log(point.constructor.name); // "Point"
+    console.log(Object.prototype.toString.call(point)); // "[object Point]"
+}
+
+// The name works alongside every other argument, including a super constructor
+const _ColorPoint = _make('ColorPoint', _Point, {
+    _init ({
+        color,
+        x,
+        y
+    }) {
+        this.color = color;
+
+        return Reflect.apply(_Point.prototype._init, this, [
+            {
+                x,
+                y
+            }
+        ]);
+    }
+});
+
+{
+    const colorPoint = new _ColorPoint({
+        color: 'red',
+        x: 1,
+        y: 2
+    });
+
+    console.log(_ColorPoint.name); // "ColorPoint"
+    console.log(colorPoint instanceof _Point); // true
+    console.log(Object.prototype.toString.call(colorPoint)); // "[object ColorPoint]"
 }
 ```
 
@@ -223,7 +296,7 @@ const _Rectangle = _make({
 import _make from 'isotropic-make';
 
 // Base Shape constructor
-const _Shape = make({
+const _Shape = _make('Shape', {
         get name () {
             return this._name;
         },
@@ -237,11 +310,11 @@ const _Shape = make({
     }),
 
     // Circle inherits from Shape
-    _Circle = _make(_Shape, {
-        getArea() {
+    _Circle = _make('Circle', _Shape, {
+        getArea () {
             return Math.PI * this._radius * this._radius;
         },
-        getCircumference() {
+        getCircumference () {
             return 2 * Math.PI * this._radius;
         },
         get radius () {
@@ -261,8 +334,8 @@ const _Shape = make({
         }
     }),
     // Rectangle inherits from Shape
-    _Rectangle = _make(_Shape, {
-        getArea() {
+    _Rectangle = _make('Rectangle', _Shape, {
+        getArea () {
             return this._height * this._width;
         },
         get height () {
@@ -271,7 +344,7 @@ const _Shape = make({
         get width () {
             return this._width;
         },
-        _init({
+        _init ({
             height,
             width
         }) {
@@ -285,7 +358,7 @@ const _Shape = make({
 
             return this;
         }
-  });
+    });
 
 {
     // Create instances
@@ -310,7 +383,7 @@ const _Shape = make({
 import _make from 'isotropic-make';
 
 // First mixin constructor
-const _Loggable = _make({
+const _Loggable = _make('Loggable', {
         error (message) {
             console.error(`[${this?.name ?? 'Unknown'}] ERROR: ${message}`);
         },
@@ -319,7 +392,7 @@ const _Loggable = _make({
         }
     }),
     // Second mixin constructor
-    _Serializable = _make({
+    _Serializable = _make('Serializable', {
         toJSON () {
             const objectToStringify = {};
 
@@ -337,7 +410,7 @@ const _Loggable = _make({
         }
     }),
     // User class that inherits from both through mixins
-    _User = _make([
+    _User = _make('User', [
         _Loggable,
         _Serializable
     ], {
@@ -348,7 +421,7 @@ const _Loggable = _make({
 
             return this;
         },
-        _init({
+        _init ({
             email,
             name
         }) {
@@ -382,7 +455,7 @@ Using a custom init method name
 ```javascript
 import _make from 'isotropic-make';
 
-const _Product = _make({
+const _Product = _make('Product', {
     getPrice () {
         return `$${this.price.toFixed(2)}`;
     },
@@ -420,9 +493,9 @@ const _initPerson = function ({
         this.name = name;
 
         return this;
-    }
-    _Person = _make({
-        greet() {
+    },
+    _Person = _make('Person', {
+        greet () {
             return `Hello, I'm ${this.name}`;
         }
     }, _initPerson);
@@ -444,7 +517,7 @@ Static init methods are executed before make returns the constructor function.
 ```javascript
 import _make from 'isotropic-make';
 
-const _DatabaseTable = _make({
+const _DatabaseTable = _make('DatabaseTable', {
     query ({
         query
     }) {
@@ -463,8 +536,8 @@ const _DatabaseTable = _make({
 
         return this;
     }
-  }, {
-    connect(config) {
+}, {
+    connect (config) {
         this.connections.push(config);
         this.isConnected = true;
 
@@ -476,7 +549,7 @@ const _DatabaseTable = _make({
 
         return this;
     },
-    _init() {
+    _init () {
         this.connections = [];
         this.isConnected = false;
 
@@ -497,7 +570,7 @@ const _DatabaseTable = _make({
     // Create instance
     const usersTable = _DatabaseTable('users');
 
-    console.log(userTable.query({
+    console.log(usersTable.query({
         query: 'SELECT *'
     })); // [ "Example Data: querying users: SELECT *" ]
 
@@ -512,7 +585,7 @@ const _DatabaseTable = _make({
 import _make from 'isotropic-make';
 
 // Base component
-const _Component = _make({
+const _Component = _make('Component', {
         render () {
             return `<div id="${this._id}">Generic Component</div>`;
         },
@@ -527,7 +600,7 @@ const _Component = _make({
         }
     }),
     // Mixins
-    _Draggable = _make({
+    _Draggable = _make('Draggable', {
         enableDrag () {
             this._draggable = true;
 
@@ -543,7 +616,7 @@ const _Component = _make({
             return this;
         }
     }),
-    _Resizable = _make({
+    _Resizable = _make('Resizable', {
         enableResize () {
             this._resizable = true;
 
@@ -561,11 +634,11 @@ const _Component = _make({
     }),
 
     // ButtonComponent inherits from Component
-    _ButtonComponent = _make(_Component, {
+    _ButtonComponent = _make('ButtonComponent', _Component, {
         render () {
             return `<button id="${this._id}">${this._text}</button>`;
         },
-        _init({
+        _init ({
             id,
             text = 'Button'
         } = {}) {
@@ -581,7 +654,7 @@ const _Component = _make({
         }
     }),
     // DraggableButtonComponent inherits from ButtonComponent and mixes Draggable
-    _DraggableButtonComponent = _make(_ButtonComponent, [
+    _DraggableButtonComponent = _make('DraggableButtonComponent', _ButtonComponent, [
         _Draggable
     ], {
         render () {
@@ -604,11 +677,11 @@ const _Component = _make({
         }
     }),
     // InteractivePanelComponent inherits from Component and uses both mixins
-    _InteractivePanelComponent = _make(_Component, [
+    _InteractivePanelComponent = _make('InteractivePanelComponent', _Component, [
         _Draggable,
         _Resizable
     ], {
-        render() {
+        render () {
             const classNames = [];
 
             if (this._draggable) {
@@ -623,7 +696,7 @@ const _Component = _make({
 
             return `<div class="${classNames.join(' ')}" id="${this._id}">${this._content}</div>`;
         },
-        _init({
+        _init ({
             content = '',
             id
         } = {}) {
@@ -674,11 +747,11 @@ const _Component = _make({
 import _make from 'isotropic-make';
 
 // Vehicle base class
-const _Vehicle = _make({
+const _Vehicle = _make('Vehicle', {
         get brand () {
             return this._brand;
         },
-        getDescription() {
+        getDescription () {
             return `${this._brand} ${this._model}`;
         },
         get model () {
@@ -701,7 +774,7 @@ const _Vehicle = _make({
     }),
 
     // Car extends Vehicle
-    _Car = _make(_Vehicle, {
+    _Car = _make('Car', _Vehicle, {
         getDescription () {
             return `${Reflect.apply(_Vehicle.prototype.getDescription, this, [])} with ${this._doorCount} doors`;
         },
@@ -724,8 +797,8 @@ const _Vehicle = _make({
         }
     }),
     // SportsCar extends Car
-    _SportsCar = _make(_Car, {
-        getDescription() {
+    _SportsCar = _make('SportsCar', _Car, {
+        getDescription () {
             return `${Reflect.apply(_Car.prototype.getDescription, this, [])} (top speed: ${this._topSpeed} mph)`;
         },
         get topSpeed () {
@@ -792,7 +865,6 @@ JavaScript has evolved significantly with the introduction of classes, which pro
 | Static Properties | Built-in support with `static` keyword | Supported through separate object parameter |
 | Mixins | No built-in support (requires composition) | First-class support for mixins |
 | Private Fields | Supported with `#` prefix (newer JS versions) | No support for private fields (intentional, see below) |
-| Method Binding | Requires manual binding or arrow functions | Context preserved in prototype methods |
 | Memory Efficiency | New instance per object | Shared prototype methods |
 
 ### When to Choose Classes
@@ -853,15 +925,15 @@ class _Counter {
 // Converted to isotropic-make
 import _make from 'isotropic-make';
 
-const _Counter = _make({
-    getValue() {
+const _Counter = _make('Counter', {
+    getValue () {
         return this.count;
     },
-    increment() {
+    increment () {
         this.count += 1;
         return this;
     },
-    _init({
+    _init ({
         initialValue = 0
     }) {
         this.count = initialValue;
@@ -888,15 +960,15 @@ The choice between them depends on your specific requirements, team preferences,
 
 ### Open for Extension, Closed for Confusion
 
-The `_` prefix indicates "protected" or "internal" members – a signal to other developers that these properties and methods are implementation details not intended for everyday use. However, unlike true private fields, they remain accessible when needed:
+The `_` prefix indicates "protected" or "internal" members. It's a signal to other developers that these properties and methods are implementation details not intended for everyday use. However, unlike true private fields, they remain accessible when needed:
 
 ```javascript
-const _Widget = _make({
-    process(input) {
+const _Widget = _make('Widget', {
+    process (input) {
         return this._transform(input);
     },
     // Internal method, but still accessible if needed
-    _transform(input) {
+    _transform (input) {
         return input.toUpperCase();
     }
 });
@@ -927,19 +999,20 @@ In real-world applications, requirements change and edge cases emerge. While a l
 
 ```javascript
 // A third-party library component with internal methods
-const _ThirdPartyComponent = _make({
-    render() {
+const _ThirdPartyComponent = _make('ThirdPartyComponent', {
+    render () {
         const data = this._processData();
+
         return `<div>${data}</div>`;
     },
-    _processData() {
+    _processData () {
         return this.data.join(", ");
     }
 });
 
 // Your custom extension that needs special data processing
-const _CustomComponent = _make(_ThirdPartyComponent, {
-    _processData() {
+const _CustomComponent = _make('CustomComponent', _ThirdPartyComponent, {
+    _processData () {
         // Override the internal method to add custom behavior
         const processed = Reflect.apply(_ThirdPartyComponent.prototype._processData, this, []);
 
