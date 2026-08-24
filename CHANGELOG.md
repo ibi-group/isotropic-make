@@ -1,4 +1,13 @@
-# Changelog
+# isotropic-make Changelog
+
+## 0.14.1 - 2026-08-23
+
+### Changed
+
+- Recommends `node ^26.7.0` / `npm ^11.19.0`.
+- `repository` now uses npm's preferred object form with explicit `type` and `url` properties rather than the `github:` shorthand. This is package metadata only.
+
+No runtime behavior changed in this release.
 
 ## 0.14.0 - 2026-07-15
 
@@ -56,14 +65,15 @@ Note that when no name is given, `make` now explicitly defines `name` as `''` on
 
 - Test suite migrated from Mocha to the built-in `node --test` runner; assertions still use Chai.
 - The Babel toolchain and the `build` / `prepare` build scripts were removed.
-- `isotropic-dev-dependencies` updated to `~0.4.0`; the separately pinned `eslint` dev dependency was dropped.
+- `isotropic-dev-dependencies` updated to `~0.4.0`.
+- The separately pinned `eslint` dev dependency was dropped.
 - `isotropic-create` and `isotropic-mixin` bumped to `~0.14.0`.
 
 ## 0.13.1 - 2025-04-10
 
 ### Changed
 
-- A comprehensive README was added, documenting the full argument-shifting signature, inheritance, mixins, and both initialization hooks with worked examples.
+- A comprehensive README was added, documenting the full argument-shifting signature, inheritance, mixins, and both initialization hooks with examples.
 - `eslint` pinned at `~9.8.0` as a direct dev dependency.
 - `isotropic-dev-dependencies` bumped to `~0.3.1`.
 - `isotropic-create` and `isotropic-mixin` bumped to `~0.13.1`.
@@ -91,8 +101,7 @@ import _make from 'isotropic-make';
 ### Changed
 
 - The default-assignment of `initFunction` and `staticInitFunction` was rewritten to use the logical OR assignment operator (`||=`). Behavior is identical.
-- ESLint moved to flat config (`eslint.config.js`).
-- The `eslintConfig` block was removed from `package.json`.
+- ESLint moved to flat config (`eslint.config.js`) so the `eslintConfig` block was removed from `package.json`.
 - Coverage tooling switched from `nyc` to `c8`.
 - `repository` given an explicit `github:` prefix.
 - Recommends `node ^22.5.1` / `npm ^10.8.2`.
@@ -101,7 +110,9 @@ import _make from 'isotropic-make';
 
 ### Changed
 
-- The entire dev toolchain was replaced by a single `isotropic-dev-dependencies` dev dependency. The Babel, ESLint, and nyc configuration blocks were removed from `package.json` in favor of shared configuration, and git hooks are now installed via Husky on `postinstall`.
+- The entire dev toolchain was replaced by a single `isotropic-dev-dependencies` dev dependency.
+- The Babel, ESLint, and nyc configuration blocks were removed from `package.json` in favor of shared configuration.
+- Git hooks are now installed via Husky on `postinstall`.
 - Recommends `node ^14.15.5` / `npm ^7.5.4`.
 
 No runtime behavior changed in this release.

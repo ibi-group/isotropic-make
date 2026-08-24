@@ -2,12 +2,12 @@
     "author": "Steven Olmsted <steven.olmsted@ibigroup.com>",
     "bugs": "https://github.com/ibi-group/isotropic-make/issues",
     "dependencies": {
-        "isotropic-create": "~0.14.0",
-        "isotropic-mixin": "~0.14.0"
+        "isotropic-create": "~0.14.1",
+        "isotropic-mixin": "~0.14.1"
     },
     "description": "A factory function that makes factory functions",
     "devDependencies": {
-        "isotropic-dev-dependencies": "~0.4.0"
+        "isotropic-dev-dependencies": "~0.5.0"
     },
     "engines": {
         "node": "^26.7.0",
@@ -45,5 +45,5 @@
         "test": "c8 -c ./node_modules/isotropic-dev-dependencies/config/c8.json node --test"
     },
     "type": "module",
-    "version": "0.14.0"
+    "version": "0.14.1"
 }
